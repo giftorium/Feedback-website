@@ -120,7 +120,6 @@
   <ul class="nav-links">
     <li><a href="/" {% if request.resolver_match.url_name == 'home' %}class="active"{% endif %}>Home</a></li>
     <li><a href="/projects/" {% if request.resolver_match.url_name in 'projects,project_detail' %}class="active"{% endif %}>Projects</a></li>
-    <li><a href="/feedback/" {% if request.resolver_match.url_name == 'feedback' %}class="active"{% endif %}>Feedback</a></li>
     <li><a href="/contact/" {% if request.resolver_match.url_name == 'contact' %}class="active"{% endif %}>Contact</a></li>
   </ul>
 </nav>
