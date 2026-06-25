@@ -1,7 +1,7 @@
 from django.contrib import admin
 from .models import (
     SiteContent, Project, Collaborator, ProjectPhoto, ProjectVideo,
-    Event, Artist, Photo, Video, ContactMessage,
+    ContactMessage,
 )
 
 
@@ -65,24 +65,3 @@ class ContactMessageAdmin(admin.ModelAdmin):
     readonly_fields = ['name', 'email', 'message', 'created_at']
 
 
-# ── Legacy Feedback Event ──
-
-class ArtistInline(admin.TabularInline):
-    model = Artist
-    extra = 1
-
-
-class PhotoInline(admin.TabularInline):
-    model = Photo
-    extra = 1
-
-
-class VideoInline(admin.TabularInline):
-    model = Video
-    extra = 1
-
-
-@admin.register(Event)
-class EventAdmin(admin.ModelAdmin):
-    list_display = ['name', 'date', 'location']
-    inlines = [ArtistInline, VideoInline, PhotoInline]
