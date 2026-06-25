@@ -1,0 +1,132 @@
+{% extends "base.html" %}
+
+{% block title %}Projects — Amir Parsa{% endblock %}
+
+{% block extra_css %}
+  .page-header {
+    padding: 10rem 3rem 5rem;
+    border-bottom: 1px solid var(--border);
+  }
+  .page-header-inner { max-width: 1200px; margin: 0 auto; }
+  .page-title {
+    font-family: var(--display);
+    font-size: clamp(3.5rem, 8vw, 7rem);
+    font-weight: 300; line-height: 0.95;
+  }
+  .page-title em { font-style: italic; color: var(--muted); }
+
+  .projects-section { padding: 6rem 3rem; }
+  .projects-section + .projects-section {
+    padding-top: 0;
+    border-top: none;
+  }
+  .projects-inner { max-width: 1200px; margin: 0 auto; }
+  .group-label {
+    font-size: 0.6rem; letter-spacing: 0.28em; text-transform: uppercase;
+    color: var(--accent); margin-bottom: 3rem;
+    display: flex; align-items: center; gap: 1rem;
+  }
+  .group-label::after { content: ''; display: block; width: 2.5rem; height: 1px; background: var(--accent); opacity: 0.5; }
+
+  .projects-grid {
+    display: grid; grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+    gap: 2.5rem;
+  }
+  .project-card { text-decoration: none; color: inherit; display: block; }
+  .project-card-image {
+    position: relative; aspect-ratio: 4/3; overflow: hidden;
+    background: var(--surface); margin-bottom: 1.25rem;
+  }
+  .project-card-image img {
+    width: 100%; height: 100%; object-fit: cover;
+    filter: brightness(0.85);
+    transition: filter 0.4s ease, transform 0.4s ease;
+  }
+  .project-card:hover .project-card-image img { filter: brightness(1); transform: scale(1.03); }
+  .project-card-placeholder { width: 100%; height: 100%; }
+  .project-card-status {
+    position: absolute; top: 1rem; left: 1rem;
+    font-size: 0.55rem; letter-spacing: 0.2em; text-transform: uppercase;
+    padding: 0.3rem 0.7rem; background: var(--accent); color: var(--bg);
+  }
+  .project-card-title {
+    font-family: var(--display); font-size: 1.4rem; font-weight: 400; margin-bottom: 0.4rem;
+  }
+  .project-card-tagline { font-size: 0.85rem; color: var(--muted); line-height: 1.6; margin-bottom: 0.5rem; }
+  .project-card-meta { font-size: 0.65rem; letter-spacing: 0.12em; text-transform: uppercase; color: var(--muted); }
+
+  .empty { color: var(--muted); font-size: 0.85rem; letter-spacing: 0.05em; }
+
+  @media (max-width: 900px) {
+    .page-header { padding: 8rem 1.5rem 4rem; }
+    .projects-section { padding: 4rem 1.5rem; }
+  }
+{% endblock %}
+
+{% block content %}
+
+<div class="page-header">
+  <div class="page-header-inner">
+    <p class="section-label">Work</p>
+    <h1 class="page-title">Projects &<br><em>Events</em></h1>
+  </div>
+</div>
+
+{% if upcoming %}
+<section class="projects-section">
+  <div class="projects-inner">
+    <p class="group-label">Upcoming</p>
+    <div class="projects-grid">
+      {% for project in upcoming %}
+      <a href="/projects/{{ project.slug }}/" class="project-card">
+        <div class="project-card-image">
+          {% if project.cover_image %}
+            <img src="{{ project.cover_image.url }}" alt="{{ project.title }}">
+          {% else %}
+            <div class="project-card-placeholder"></div>
+          {% endif %}
+          <span class="project-card-status">Upcoming</span>
+        </div>
+        <h3 class="project-card-title">{{ project.title }}</h3>
+        {% if project.tagline %}<p class="project-card-tagline">{{ project.tagline }}</p>{% endif %}
+        <p class="project-card-meta">
+          {% if project.date %}{{ project.date|date:"F j, Y" }}{% endif %}
+          {% if project.venue %} &middot; {{ project.venue }}{% endif %}
+        </p>
+      </a>
+      {% endfor %}
+    </div>
+  </div>
+</section>
+{% endif %}
+
+<section class="projects-section">
+  <div class="projects-inner">
+    <p class="group-label">Archive</p>
+    {% if completed %}
+    <div class="projects-grid">
+      {% for project in completed %}
+      <a href="/projects/{{ project.slug }}/" class="project-card">
+        <div class="project-card-image">
+          {% if project.cover_image %}
+            <img src="{{ project.cover_image.url }}" alt="{{ project.title }}">
+          {% else %}
+            <div class="project-card-placeholder"></div>
+          {% endif %}
+        </div>
+        <h3 class="project-card-title">{{ project.title }}</h3>
+        {% if project.tagline %}<p class="project-card-tagline">{{ project.tagline }}</p>{% endif %}
+        <p class="project-card-meta">
+          {% if project.date %}{{ project.date|date:"Y" }}{% endif %}
+          {% if project.venue %} &middot; {{ project.venue }}{% endif %}
+        </p>
+      </a>
+      {% endfor %}
+    </div>
+    {% else %}
+    <p class="empty">No completed projects yet.</p>
+    {% endif %}
+  </div>
+</section>
+
+{% endblock %}

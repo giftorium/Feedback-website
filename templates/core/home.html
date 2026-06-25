@@ -98,8 +98,66 @@
   }
   .event-card-link:hover { color: var(--text); }
 
+  /* ── PROJECTS ── */
+  #projects { padding: 0 3rem 9rem; }
+  .projects-inner { max-width: 1200px; margin: 0 auto; }
+  .projects-header {
+    display: flex; justify-content: space-between; align-items: center;
+    margin-bottom: 3rem;
+  }
+  .projects-header .section-label { margin-bottom: 0; }
+  .projects-all {
+    font-size: 0.65rem; letter-spacing: 0.2em; text-transform: uppercase;
+    color: var(--muted); text-decoration: none; transition: color 0.2s;
+  }
+  .projects-all:hover { color: var(--text); }
+  .projects-group { margin-bottom: 4rem; }
+  .projects-group-label {
+    font-size: 0.6rem; letter-spacing: 0.22em; text-transform: uppercase;
+    color: var(--muted); margin-bottom: 1.5rem; padding-bottom: 1rem;
+    border-bottom: 1px solid var(--border);
+  }
+  .projects-grid {
+    display: grid; grid-template-columns: repeat(auto-fill, minmax(260px, 1fr));
+    gap: 2rem;
+  }
+  .project-card {
+    text-decoration: none; color: inherit; display: block;
+  }
+  .project-card-image {
+    position: relative; aspect-ratio: 4/3; overflow: hidden;
+    background: var(--surface); margin-bottom: 1.25rem;
+  }
+  .project-card-image img {
+    width: 100%; height: 100%; object-fit: cover;
+    filter: brightness(0.85);
+    transition: filter 0.4s ease, transform 0.4s ease;
+  }
+  .project-card:hover .project-card-image img {
+    filter: brightness(1); transform: scale(1.03);
+  }
+  .project-card-placeholder { width: 100%; height: 100%; background: var(--surface); }
+  .project-card-status {
+    position: absolute; top: 1rem; left: 1rem;
+    font-size: 0.55rem; letter-spacing: 0.2em; text-transform: uppercase;
+    padding: 0.3rem 0.7rem; background: var(--accent); color: var(--bg);
+  }
+  .project-card-title {
+    font-family: var(--display); font-size: 1.3rem; font-weight: 400;
+    margin-bottom: 0.4rem;
+  }
+  .project-card-tagline {
+    font-size: 0.82rem; color: var(--muted); line-height: 1.6;
+    margin-bottom: 0.5rem;
+  }
+  .project-card-meta {
+    font-size: 0.65rem; letter-spacing: 0.12em; text-transform: uppercase;
+    color: var(--muted);
+  }
+
   @media (max-width: 900px) {
     #about { padding: 6rem 1.5rem; }
+    #projects { padding: 0 1.5rem 6rem; }
     #featured { padding: 0 1.5rem 6rem; }
     .about-inner { grid-template-columns: 1fr; gap: 3rem; }
     .event-card { grid-template-columns: 1fr; padding: 2.5rem; }
@@ -113,9 +171,9 @@
 
 <section class="hero">
   <div class="hero-content">
-    <p class="hero-eyebrow">Curator &amp; Audiovisual Producer — Toronto</p>
+    <p class="hero-eyebrow">{{ site.hero_eyebrow }}</p>
     <h1 class="hero-title">Amir<br><em>Parsa</em></h1>
-    <p class="hero-sub">Building platforms where sound, image, and live systems converge into a single experience.</p>
+    <p class="hero-sub">{{ site.hero_subtitle }}</p>
   </div>
   <span class="hero-scroll">Scroll to explore</span>
 </section>
@@ -124,22 +182,78 @@
   <div class="about-inner">
     <div>
       <p class="section-label">About</p>
-      <h2 class="about-heading">Where image<br>and sound become <em>one</em></h2>
+      <h2 class="about-heading">{{ site.about_heading }}</h2>
     </div>
     <div>
-      <div class="about-text">
-        <p>Amir Parsa is a Toronto-based curator and audiovisual producer focused on live performance at the intersection of sound, image, and technology.</p>
-        <p>He is the founder of Live Feedback Toronto — a curated series presenting artists who work with real-time audiovisual systems. Each edition brings together performers whose sound and visuals evolve together, live, in front of an audience.</p>
-        <p>His work is built around a simple conviction: that experimentation is not a risk to manage — it's the point.</p>
-      </div>
+      <div class="about-text">{{ site.about_text|linebreaks }}</div>
       <div class="about-roles">
-        <span class="about-role">Audiovisual Curation</span>
-        <span class="about-role">Live Systems</span>
-        <span class="about-role">Immersive Performance</span>
+        {% for role in site.roles_list %}
+          <span class="about-role">{{ role }}</span>
+        {% endfor %}
       </div>
     </div>
   </div>
 </section>
+
+{% if upcoming_projects or recent_projects %}
+<section id="projects">
+  <div class="projects-inner">
+    <div class="projects-header">
+      <p class="section-label">Projects</p>
+      <a href="/projects/" class="projects-all">All Projects &rarr;</a>
+    </div>
+
+    {% if upcoming_projects %}
+    <div class="projects-group">
+      <p class="projects-group-label">Upcoming</p>
+      <div class="projects-grid">
+        {% for project in upcoming_projects %}
+        <a href="/projects/{{ project.slug }}/" class="project-card">
+          <div class="project-card-image">
+            {% if project.cover_image %}
+              <img src="{{ project.cover_image.url }}" alt="{{ project.title }}">
+            {% else %}
+              <div class="project-card-placeholder"></div>
+            {% endif %}
+            <span class="project-card-status upcoming">Upcoming</span>
+          </div>
+          <div class="project-card-body">
+            <h3 class="project-card-title">{{ project.title }}</h3>
+            {% if project.tagline %}<p class="project-card-tagline">{{ project.tagline }}</p>{% endif %}
+            <p class="project-card-meta">{% if project.date %}{{ project.date|date:"F Y" }}{% endif %}{% if project.venue %} &middot; {{ project.venue }}{% endif %}</p>
+          </div>
+        </a>
+        {% endfor %}
+      </div>
+    </div>
+    {% endif %}
+
+    {% if recent_projects %}
+    <div class="projects-group">
+      {% if upcoming_projects %}<p class="projects-group-label">Recent Work</p>{% endif %}
+      <div class="projects-grid">
+        {% for project in recent_projects %}
+        <a href="/projects/{{ project.slug }}/" class="project-card">
+          <div class="project-card-image">
+            {% if project.cover_image %}
+              <img src="{{ project.cover_image.url }}" alt="{{ project.title }}">
+            {% else %}
+              <div class="project-card-placeholder"></div>
+            {% endif %}
+          </div>
+          <div class="project-card-body">
+            <h3 class="project-card-title">{{ project.title }}</h3>
+            {% if project.tagline %}<p class="project-card-tagline">{{ project.tagline }}</p>{% endif %}
+            <p class="project-card-meta">{% if project.date %}{{ project.date|date:"Y" }}{% endif %}{% if project.venue %} &middot; {{ project.venue }}{% endif %}</p>
+          </div>
+        </a>
+        {% endfor %}
+      </div>
+    </div>
+    {% endif %}
+  </div>
+</section>
+{% endif %}
 
 {% if event %}
 <section id="featured">
